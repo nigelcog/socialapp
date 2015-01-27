@@ -1,0 +1,38 @@
+<RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <Button
+        android:layout_width="200sp"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:id="@+id/register"
+        android:layout_above="@+id/login"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="53dp"
+        android:padding="3sp"/>
+
+    <Button
+        android:layout_width="200sp"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:id="@+id/login"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/register"
+        android:layout_alignStart="@+id/register"
+        android:padding="3sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Welcome to Social App"
+        android:id="@+id/heading"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textSize="14pt"
+        android:layout_margin="15sp"/>
+
+</RelativeLayout>
