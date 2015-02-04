@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivListRow"
+            android:src="@drawable/ce"
+            android:layout_margin="10dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="The Curious Engineer"
+            android:id="@+id/tvListRowTitle"
+            android:textSize="15dp"
+            android:textColor="#ff000000"
+            android:textStyle="bold"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="10dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="This was one of my favorite comics from last year."
+        android:id="@+id/tvPost"
+        android:layout_margin="10dp"
+        android:textColor="#ff242424" />
+</LinearLayout>

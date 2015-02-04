@@ -1,4 +1,4 @@
-package com.creativecub.socialapp;
+package com.creativecub.socialapp.miscellaneous;
 
 import android.app.Application;
 

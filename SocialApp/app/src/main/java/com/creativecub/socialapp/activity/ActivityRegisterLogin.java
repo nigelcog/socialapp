@@ -1,12 +1,14 @@
-package com.creativecub.socialapp;
+package com.creativecub.socialapp.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.creativecub.socialapp.R;
+import com.creativecub.socialapp.fragment.FragmentLoginRegister;
 import com.parse.ParseUser;
 
 
@@ -21,7 +23,7 @@ public class ActivityRegisterLogin extends ActionBarActivity {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null && currentUser.getBoolean("emailVerified")) {
             // do stuff with the user
-             startActivity(new Intent(this,ActivityMyAccount.class));
+             startActivity(new Intent(this,ActivityPost.class));
              finish();
         } else {
             // show the signup or login screen

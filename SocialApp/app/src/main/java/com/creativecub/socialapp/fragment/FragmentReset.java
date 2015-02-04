@@ -1,4 +1,4 @@
-package com.creativecub.socialapp;
+package com.creativecub.socialapp.fragment;
 
 
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.creativecub.socialapp.R;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;

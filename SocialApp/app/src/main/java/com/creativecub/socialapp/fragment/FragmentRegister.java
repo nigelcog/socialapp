@@ -1,4 +1,4 @@
-package com.creativecub.socialapp;
+package com.creativecub.socialapp.fragment;
 
 
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.creativecub.socialapp.R;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -63,6 +64,7 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
                     editor.commit();
 
                     ParseUser user = new ParseUser();
+                    user.put("full_name",getFullname());
                     user.setUsername(getEmailId());
                     user.setPassword(getPassword());
                     user.setEmail(getEmailId());

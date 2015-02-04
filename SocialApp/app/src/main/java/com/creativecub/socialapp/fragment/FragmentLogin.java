@@ -1,4 +1,4 @@
-package com.creativecub.socialapp;
+package com.creativecub.socialapp.fragment;
 
 
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.creativecub.socialapp.R;
+import com.creativecub.socialapp.activity.ActivityPost;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -48,7 +50,7 @@ public class FragmentLogin extends Fragment implements View.OnClickListener {
                             if (user != null) {
                                 // Hooray! The user is logged in.
                                 if(user.getBoolean("emailVerified")) {
-                                    startActivity(new Intent(getActivity(), ActivityMyAccount.class));
+                                    startActivity(new Intent(getActivity(), ActivityPost.class));
                                     getActivity().finish();
                                     Toast.makeText(getActivity(), "Logged In", Toast.LENGTH_LONG).show();
                                 }

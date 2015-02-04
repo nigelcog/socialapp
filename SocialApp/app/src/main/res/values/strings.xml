@@ -7,4 +7,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_activity_my_account">ActivityMyAccount</string>
 
+
+    <string name="btn_post">Post</string>
+    <string name="action_logout">Logout</string>
+
+    <string name="btn_edit">Edit Info</string>
+    <string name="btn_logout">Logout</string>
+
 </resources>
