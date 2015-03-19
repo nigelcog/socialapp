@@ -8,11 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.creativecub.socialapp.R;
+import com.creativecub.socialapp.fragment.FragmentEditInfo;
 import com.creativecub.socialapp.fragment.FragmentUser;
 import com.parse.ParseUser;
 
 
 public class ActivityMyAccount extends ActionBarActivity {
+
+    public static int intflag = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +25,21 @@ public class ActivityMyAccount extends ActionBarActivity {
 
         if (savedInstanceState == null) {
 
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.container_myaccount, new FragmentUser(), "user");
-            ft.commit();
+            /*if(ActivityMyAccount.intflag == 0) {
+                ActivityMyAccount.intflag = 1;
+            }*/
+
+            if(ActivityMyAccount.intflag == 1) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.container_myaccount, new FragmentUser(), "user");
+                ft.commit();
+            }
+            else if(ActivityMyAccount.intflag == 2){
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.container_myaccount, new FragmentEditInfo(), "edit_info2");
+                ft.commit();
+
+            }
 
         }
 

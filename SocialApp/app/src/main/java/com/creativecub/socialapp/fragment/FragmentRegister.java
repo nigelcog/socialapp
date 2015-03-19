@@ -1,7 +1,10 @@
 package com.creativecub.socialapp.fragment;
 
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +32,11 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
     Button btnregister;
     RadioGroup radioGroup;
 
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    ProgressDialog progress;
+
     public FragmentRegister() {
         // Required empty public constructor
     }
@@ -39,6 +47,13 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_register, container, false);
+
+        progress = new ProgressDialog(getActivity());
+        progress.setTitle("Please wait..");
+        progress.setMessage("Registering");
+        progress.setCancelable(true);
+
+
         fullname = (EditText) root.findViewById(R.id.fullname);
         emailid = (EditText) root.findViewById(R.id.emailid);
         password = (EditText) root.findViewById(R.id.password);
@@ -47,6 +62,10 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
 
         btnregister = (Button)root.findViewById(R.id.btnregister);
         btnregister.setOnClickListener(this);
+
+        sharedPreferences = getActivity().getSharedPreferences("Social App", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
         return root;
     }
 
@@ -58,8 +77,18 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
             case R.id.btnregister:
                 if(getWhoAmI()!=null && getFullname()!=null && getEmailId()!=null && getPassword()!=null)
                 {
+
+
+                    progress.show();
+
+
+
                     SharedPreferences preferences = getActivity().getSharedPreferences("default", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
+
+                    this.editor.putString("email",getEmailId());
+                    this.editor.commit();
+
                     editor.putString("fullname",getFullname());
                     editor.commit();
 
@@ -76,7 +105,10 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
                         public void done(ParseException e) {
                             if (e == null) {
                                 // Hooray! Let them use the app now.
-                                Toast.makeText(getActivity(), "Now you can Login", Toast.LENGTH_LONG).show();
+                              //  Toast.makeText(getActivity(), "Please verify your email. Then Login", Toast.LENGTH_LONG).show();
+
+                                progress.dismiss();
+                                showOkDialog();
                                 //startActivity(new Intent(getActivity(),ActivityMyAccount.class));
                                 //Toast.makeText(getActivity(),"Thanks for registering to us",Toast.LENGTH_LONG).show();
                                 //getActivity().finish();
@@ -84,6 +116,7 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
                             } else {
                                 // Sign up didn't succeed. Look at the ParseException
                                 // to figure out what went wrong
+                                progress.dismiss();
                                 Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
                             }
                         }
@@ -93,6 +126,24 @@ public class FragmentRegister extends Fragment implements View.OnClickListener{
         }
 
     }
+
+    public void showOkDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Please verify your email and then Login. \n\nWe have sent you an email with the verification link.")
+                .setTitle("Registration Successful!")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //do things
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
+
     public String getWhoAmI()
     {
         int id = radioGroup.getCheckedRadioButtonId();

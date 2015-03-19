@@ -23,9 +23,10 @@ public class ActivityRegisterLogin extends ActionBarActivity {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null && currentUser.getBoolean("emailVerified")) {
             // do stuff with the user
-             startActivity(new Intent(this,ActivityPost.class));
+//             startActivity(new Intent(this,ActivityPost.class));
+            startActivity(new Intent(this,ActivityFeed.class));
              finish();
-        } else {
+        } else if (savedInstanceState == null)  {
             // show the signup or login screen
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new FragmentLoginRegister(), "login_register");

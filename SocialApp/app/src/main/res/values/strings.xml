@@ -3,7 +3,9 @@
 
     <string name="app_name">Social App</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">My Account</string>
+    <string name="action_post">New Post</string>
+    <string name="action_refresh">Refresh</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_activity_my_account">ActivityMyAccount</string>
 
@@ -13,5 +15,11 @@
 
     <string name="btn_edit">Edit Info</string>
     <string name="btn_logout">Logout</string>
+    <string name="title_activity_activity_feed">News Feed</string>
+
+
+    <string name="title_section1">Local</string>
+    <string name="title_section2">Global</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

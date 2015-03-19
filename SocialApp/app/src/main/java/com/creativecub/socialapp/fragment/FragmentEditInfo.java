@@ -1,7 +1,10 @@
 package com.creativecub.socialapp.fragment;
 
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +23,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.creativecub.socialapp.R;
+import com.creativecub.socialapp.activity.ActivityFeed;
 import com.creativecub.socialapp.activity.ActivityPost;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -46,7 +50,15 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
     Bitmap selectedImage = null;
     byte[] data;
 
+    public static Boolean boolImageFlag = false;
+    int intFirstTime;
+
     ParseUser user;
+
+    ProgressDialog progress;
+
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     public FragmentEditInfo() {
         // Required empty public constructor
@@ -58,6 +70,16 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_edit, container, false);
+
+        progress = new ProgressDialog(getActivity());
+        progress.setTitle("Please wait..");
+        progress.setMessage("Saving");
+        progress.setCancelable(true);
+
+        intFirstTime = 1;
+
+        sharedPreferences = getActivity().getSharedPreferences("Social App", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         btnSaveInfo = (Button)rootView.findViewById(R.id.btnSaveInfo);
         etFullName = (EditText)rootView.findViewById(R.id.etFullName);
@@ -79,35 +101,41 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
         if (user.get("iam").toString().equals("Student")){
 
            rbStudent.setChecked(true);
+
         }
         else{
             rbProfessor.setChecked(true);
         }
 
 
-        ParseFile file = (ParseFile)user.get("image");
+        if(ActivityPost.bmGlobal == null) {
+            ParseFile file = (ParseFile) user.get("image");
 
-        if(file != null){
-            file.getDataInBackground(new GetDataCallback() {
-                @Override
-                public void done(byte[] bytes, ParseException e) {
-                    if (e == null) {
-                        // data has the bytes for the resume
-                        Toast.makeText(getActivity(), "Got image", Toast.LENGTH_SHORT).show();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
-                        ivEditProfilePic.setImageBitmap(bitmap);
+            if (file != null) {
+                file.getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, ParseException e) {
+                        if (e == null) {
+                            // data has the bytes for the resume
+                            Toast.makeText(getActivity(), "Got image", Toast.LENGTH_SHORT).show();
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            ivEditProfilePic.setImageBitmap(bitmap);
 
-                    } else {
-                        // something went wrong
-                        Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
+                        } else {
+                            // something went wrong
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            });
+                });
 
+            } else {
+
+                Toast.makeText(getActivity(), "Image not saved", Toast.LENGTH_SHORT).show();
+            }
         }
-        else {
+        else{
 
-            Toast.makeText(getActivity(), "Image not saved", Toast.LENGTH_SHORT).show();
+            ivEditProfilePic.setImageBitmap(ActivityPost.bmGlobal);
         }
 
 
@@ -141,20 +169,35 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
                 }
                 else if(!getEmailId()){
 
+                    Toast.makeText(getActivity(),"Enter correct email id",Toast.LENGTH_LONG).show();
+                }
+                else if(boolImageFlag == false) {
+
+                    Toast.makeText(getActivity(),"Please select your Profile Image",Toast.LENGTH_LONG).show();
                 }
                 else {
 
+                    progress.show();
                     ActivityPost.fullNameGlobal = etFullName.getText().toString();
 
                     user.put("full_name", etFullName.getText().toString());
                     user.setEmail(etEmail.getText().toString());
                     user.setUsername(etEmail.getText().toString());
+
                     if(rbStudent.isChecked()){
                         user.put("iam","Student");
+
+                        editor.putString("local","Student");
+                        editor.putString("global","Professor");
+                        editor.commit();
                     }
                     else{
 
                         user.put("iam","Professor");
+
+                        editor.putString("local","Professor");
+                        editor.putString("global","Student");
+                        editor.commit();
                     }
 
                     user.saveInBackground(new SaveCallback() {
@@ -164,22 +207,25 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
                                 // Hooray! Let them use the app now.
                                 Toast.makeText(getActivity(), "Data saved", Toast.LENGTH_SHORT).show();
                                 if(imgType.equals("")){
+                                    progress.dismiss();
                                    getActivity().onBackPressed();
                                 }
-
 
                             } else {
                                 // Sign up didn't succeed. Look at the ParseException
                                 // to figure out what went wrong
+                                progress.dismiss();
                                 Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         }
                     });
+
+                    if(!imgType.equals("")){
+                        new LongOperation().execute();
+                    }
                 }
 
-                if(!imgType.equals("")){
-                    new LongOperation().execute();
-                }
+
 
 
                 break;
@@ -215,6 +261,12 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
                         final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
                         selectedImage = BitmapFactory.decodeStream(imageStream);
                         ivEditProfilePic.setImageBitmap(selectedImage);
+                        if(boolImageFlag == false){
+                            boolImageFlag = true;
+                            intFirstTime = 2;
+
+                        }
+
 
                         Cursor returnCursor =
                                 getActivity().getContentResolver().query(imageUri, null, null, null, null);
@@ -293,7 +345,17 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
                             if (e == null) {
                                 // Hooray! Let them use the app now.
                                 Toast.makeText(getActivity(), "ProfilePic saved", Toast.LENGTH_SHORT).show();
-                                getActivity().onBackPressed();
+                                if(intFirstTime == 1){
+                                    progress.dismiss();
+                                    getActivity().onBackPressed();
+                                }
+                                else {
+                                    progress.dismiss();
+                                    Intent intent = new Intent(getActivity(),ActivityFeed.class);
+                                    startActivity(intent);
+                                    getActivity().finish();
+                                }
+
 
                             } else {
                                 // Sign up didn't succeed. Look at the ParseException
@@ -325,10 +387,7 @@ public class FragmentEditInfo extends Fragment implements View.OnClickListener{
             {
                 return true;
             }
-            else
-            {
-                Toast.makeText(getActivity(),"Enter correct email id",Toast.LENGTH_LONG).show();
-            }
+
         }
         return false;
     }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.creativecub.socialapp.R;
+import com.creativecub.socialapp.activity.ActivityPost;
 import com.creativecub.socialapp.activity.ActivityRegisterLogin;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -84,31 +85,35 @@ public class FragmentUser extends Fragment implements View.OnClickListener {
         tvProfession.setText(user.get("iam").toString());
 
 
-        ParseFile file = (ParseFile)user.get("image");
+        if(ActivityPost.bmGlobal == null) {
+            ParseFile file = (ParseFile) user.get("image");
 
-        if(file != null){
-            file.getDataInBackground(new GetDataCallback() {
-                @Override
-                public void done(byte[] bytes, ParseException e) {
-                    if (e == null) {
-                        // data has the bytes for the resume
-                        Toast.makeText(getActivity(), "Got image", Toast.LENGTH_SHORT).show();
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes , 0, bytes.length);
-                        ivProfilePic.setImageBitmap(bitmap);
+            if (file != null) {
+                file.getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, ParseException e) {
+                        if (e == null) {
+                            // data has the bytes for the resume
+                            Toast.makeText(getActivity(), "Got image", Toast.LENGTH_SHORT).show();
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            ivProfilePic.setImageBitmap(bitmap);
 
-                    } else {
-                        // something went wrong
-                        Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
+                        } else {
+                            // something went wrong
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            });
+                });
 
+            } else {
+
+                Toast.makeText(getActivity(), "Image not saved", Toast.LENGTH_SHORT).show();
+            }
         }
-        else {
+        else{
 
-            Toast.makeText(getActivity(), "Image not saved", Toast.LENGTH_SHORT).show();
+            ivProfilePic.setImageBitmap(ActivityPost.bmGlobal);
         }
-
         //byte[] data = Parse.
 
 
@@ -151,6 +156,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener {
 //                    }
 //                });
 
+                FragmentEditInfo.boolImageFlag = true;
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.container_myaccount, new FragmentEditInfo(), "edit_info");
                 ft.addToBackStack(null);
