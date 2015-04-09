@@ -13,7 +13,8 @@
             android:layout_height="50dp"
             android:id="@+id/ivListRow"
             android:src="@drawable/ce"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:scaleType="fitXY"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,6 +35,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="This was one of my favorite comics from last year."
         android:id="@+id/tvPost"
+        android:autoLink="all"
         android:layout_margin="10dp"
         android:textColor="#ff242424" />
 </LinearLayout>

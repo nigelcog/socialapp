@@ -16,6 +16,7 @@ import java.util.ArrayList;
 public class MySimpleArrayAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final ArrayList<String> alString;
+    private LayoutInflater inflater = null;
 
     public MySimpleArrayAdapter(Context context, ArrayList<String> alString) {
         super(context, R.layout.list_row, alString);
@@ -26,17 +27,31 @@ public class MySimpleArrayAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.list_row, null, false);
-        TextView textView = (TextView) rowView.findViewById(R.id.tvPost);
-        TextView tvListRowTitle = (TextView) rowView.findViewById(R.id.tvListRowTitle);
-        ImageView ivListRow = (ImageView) rowView.findViewById(R.id.ivListRow);
+        if (convertView == null) {
+            if (inflater == null)
+                inflater = (LayoutInflater) context
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        tvListRowTitle.setText(ActivityPost.fullNameGlobal);
-        textView.setText(alString.get(position));
-        ivListRow.setImageBitmap(ActivityPost.bmGlobal);
+            convertView = inflater.inflate(R.layout.list_row, null, false);
+            ViewHolder viewHolder = new ViewHolder();
+            viewHolder.tvPost = (TextView) convertView.findViewById(R.id.tvPost);
+            viewHolder.tvListRowTitle = (TextView) convertView.findViewById(R.id.tvListRowTitle);
+            viewHolder.ivListRow = (ImageView) convertView.findViewById(R.id.ivListRow);
+            convertView.setTag(viewHolder);
+        }
 
-        return rowView;
+        ViewHolder holder = (ViewHolder) convertView.getTag();
+        holder.tvListRowTitle.setText(ActivityPost.fullNameGlobal);
+        holder.tvPost.setText(alString.get(position));
+        holder.ivListRow.setImageBitmap(ActivityPost.bmGlobal);
+
+        return convertView;
     }
-}  
+
+    private class ViewHolder {
+
+        public TextView tvPost;
+        public TextView tvListRowTitle;
+        public ImageView ivListRow;
+    }
+}

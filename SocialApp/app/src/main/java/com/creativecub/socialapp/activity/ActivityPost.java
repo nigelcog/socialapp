@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +56,7 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
     ArrayList<String> alPosts;
     ArrayList<String> alName;
     ArrayList<ParseFile> alImage;
+    ArrayList<Bitmap> alBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,6 +237,7 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
     alPosts = new ArrayList<String>();
     alName = new ArrayList<String>();
     alImage = new ArrayList<ParseFile>();
+    alBitmap = new ArrayList<Bitmap>();
 
 
 // Create query for objects of type "Post"
@@ -252,16 +256,13 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
                     // If there are results, update the list of posts
                     // and notify the adapter
                   //  posts.clear();
+
                     for (ParseObject post : postList) {
                         alPosts.add(post.getString("postContent"));
                         alName.add(post.getString("userName"));
                         alImage.add(post.getParseFile("image"));
                     }
-
-
-                    SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getApplicationContext(),alPosts,alName,alImage);
-                    lvPost.setAdapter(adapterFeed);
-
+                    getImage(0);
                     //((ArrayAdapter<String>)getListAdapter()).notifyDataSetChanged();
                 } else {
                     Log.d("Post retrieval", "Error: " + e.getMessage());
@@ -270,5 +271,50 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
 
         });
 
+    }
+
+    public void getImage(int i)
+    {
+        alBitmap.add(null);
+        ParseFile parseFile = (ParseFile) alImage.get(i);
+        final int finalI = i;
+        parseFile.getDataInBackground(new GetDataCallback() {
+            @Override
+            public void done(byte[] bytes, ParseException e) {
+                // something went wrong
+                if (e == null) {
+                    // data has the bytes for the resume
+                    //  Toast.makeText(context, "Got image", Toast.LENGTH_SHORT).show();
+                    Bitmap bitmap = compress(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    alBitmap.add(finalI, bitmap);
+                    if(finalI == alImage.size()-1)
+                    {
+                        SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getApplicationContext(),alPosts,alName,alBitmap);
+                        lvPost.setAdapter(adapterFeed);
+                        return;
+                    }
+                    getImage(finalI+1);
+                } else {
+                    alBitmap.add(finalI,null);
+                    if(finalI == alPosts.size()-1)
+                    {
+                        SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getApplicationContext(),alPosts,alName,alBitmap);
+                        lvPost.setAdapter(adapterFeed);
+                        return;
+                    }
+
+                    getImage(finalI+1);
+                }
+            }
+        });
+    }
+
+    public Bitmap compress(Bitmap b)
+    {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inTempStorage = new byte[24*1024];
+        options.inJustDecodeBounds = false;
+        options.inSampleSize=32;
+        return ThumbnailUtils.extractThumbnail(b, 50, 50);
     }
 }

@@ -4,6 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +27,7 @@ import android.widget.Toast;
 import com.creativecub.socialapp.R;
 import com.creativecub.socialapp.adapter.SimpleAdapterFeed;
 import com.parse.FindCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -213,6 +217,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
         ArrayList<String> alPosts;
         ArrayList<String> alName;
         ArrayList<ParseFile> alImage;
+        ArrayList<Bitmap> alBitmap;
 
         SharedPreferences sharedPreferences;
         SharedPreferences.Editor editor;
@@ -295,6 +300,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
             alPosts = new ArrayList<String>();
             alName = new ArrayList<String>();
             alImage = new ArrayList<ParseFile>();
+            alBitmap = new ArrayList<Bitmap>();
 
 
 // Create query for objects of type "Post"
@@ -330,10 +336,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
                             Collections.reverse(alImage);
                         }
 
-                        progress.dismiss();
-
-                        SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getActivity(),alPosts,alName,alImage);
-                        lvFeed.setAdapter(adapterFeed);
+                        getImage(0);
 
                         //((ArrayAdapter<String>)getListAdapter()).notifyDataSetChanged();
                     } else {
@@ -343,6 +346,52 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
 
             });
 
+        }
+
+        public void getImage(int i)
+        {
+            alBitmap.add(null);
+            ParseFile parseFile = (ParseFile) alImage.get(i);
+            final int finalI = i;
+            parseFile.getDataInBackground(new GetDataCallback() {
+                @Override
+                public void done(byte[] bytes, ParseException e) {
+                    // something went wrong
+                    if (e == null) {
+                        // data has the bytes for the resume
+                        //  Toast.makeText(context, "Got image", Toast.LENGTH_SHORT).show();
+                        Bitmap bitmap = compress(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+
+                        alBitmap.add(finalI, bitmap);
+                        if(finalI == alImage.size()-1)
+                        {
+                            SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getActivity(),alPosts,alName,alBitmap);
+                            listViewFeed.setAdapter(adapterFeed);
+                            progress.dismiss();
+                            return;
+                        }
+                        getImage(finalI+1);
+                    } else {
+                        alBitmap.add(finalI,null);
+                        if(finalI == alPosts.size()-1)
+                        {
+                            SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getActivity(),alPosts,alName,alBitmap);
+                            listViewFeed.setAdapter(adapterFeed);
+                            progress.dismiss();
+                            return;
+                        }
+                        getImage(finalI+1);
+                    }
+                }
+            });
+        }
+        public Bitmap compress(Bitmap b)
+        {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inTempStorage = new byte[24*1024];
+            options.inJustDecodeBounds = false;
+            options.inSampleSize=32;
+            return ThumbnailUtils.extractThumbnail(b, 50, 50);
         }
     }
 
