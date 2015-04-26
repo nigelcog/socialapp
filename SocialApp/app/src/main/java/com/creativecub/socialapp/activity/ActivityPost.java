@@ -55,8 +55,10 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
 
     ArrayList<String> alPosts;
     ArrayList<String> alName;
+    ArrayList<String> alImageLink;
     ArrayList<ParseFile> alImage;
     ArrayList<Bitmap> alBitmap;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,6 +240,7 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
     alName = new ArrayList<String>();
     alImage = new ArrayList<ParseFile>();
     alBitmap = new ArrayList<Bitmap>();
+    alImageLink = new ArrayList<String>();
 
 
 // Create query for objects of type "Post"
@@ -260,9 +263,18 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
                     for (ParseObject post : postList) {
                         alPosts.add(post.getString("postContent"));
                         alName.add(post.getString("userName"));
+                        try {
+                            alImageLink.add(post.getParseFile("image").getUrl());
+                        } catch (Exception e1) {
+                            Toast.makeText(getApplicationContext(),"errorororororor",Toast.LENGTH_LONG).show();
+                        }
                         alImage.add(post.getParseFile("image"));
+
                     }
-                    getImage(0);
+
+                    SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getApplicationContext(),alPosts,alName,alImageLink);
+                    lvPost.setAdapter(adapterFeed);
+                    //getImage(0);
                     //((ArrayAdapter<String>)getListAdapter()).notifyDataSetChanged();
                 } else {
                     Log.d("Post retrieval", "Error: " + e.getMessage());
@@ -273,6 +285,8 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
 
     }
 
+
+    /*
     public void getImage(int i)
     {
         alBitmap.add(null);
@@ -307,7 +321,7 @@ public class ActivityPost extends ActionBarActivity implements View.OnClickListe
                 }
             }
         });
-    }
+    }*/
 
     public Bitmap compress(Bitmap b)
     {

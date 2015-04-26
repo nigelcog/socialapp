@@ -216,6 +216,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
 
         ArrayList<String> alPosts;
         ArrayList<String> alName;
+        ArrayList<String> alImageLink;
         ArrayList<ParseFile> alImage;
         ArrayList<Bitmap> alBitmap;
 
@@ -301,6 +302,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
             alName = new ArrayList<String>();
             alImage = new ArrayList<ParseFile>();
             alBitmap = new ArrayList<Bitmap>();
+            alImageLink = new ArrayList<String>();
 
 
 // Create query for objects of type "Post"
@@ -322,6 +324,11 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
                         for (ParseObject post : postList) {
                             alPosts.add(post.getString("postContent"));
                             alName.add(post.getString("userName"));
+                            try {
+                                alImageLink.add(post.getParseFile("image").getUrl());
+                            } catch (Exception e1) {
+                                Toast.makeText(getActivity(),"errorororororor",Toast.LENGTH_LONG).show();
+                            }
                             alImage.add(post.getParseFile("image"));
                         }
 
@@ -334,9 +341,13 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
                             Collections.reverse(alPosts);
                             Collections.reverse(alName);
                             Collections.reverse(alImage);
+                            Collections.reverse(alImageLink);
                         }
 
-                        getImage(0);
+                        SimpleAdapterFeed adapterFeed = new SimpleAdapterFeed(getActivity(),alPosts,alName,alImageLink);
+                        listViewFeed.setAdapter(adapterFeed);
+                        progress.dismiss();
+                        //getImage(0);
 
                         //((ArrayAdapter<String>)getListAdapter()).notifyDataSetChanged();
                     } else {
@@ -348,7 +359,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
 
         }
 
-        public void getImage(int i)
+        /*public void getImage(int i)
         {
             alBitmap.add(null);
             ParseFile parseFile = (ParseFile) alImage.get(i);
@@ -384,7 +395,7 @@ public class ActivityFeed extends ActionBarActivity implements ActionBar.TabList
                     }
                 }
             });
-        }
+        }*/
         public Bitmap compress(Bitmap b)
         {
             BitmapFactory.Options options = new BitmapFactory.Options();

@@ -17,16 +17,16 @@ public class SimpleAdapterFeed extends ArrayAdapter<String> {
     private  Context context = null;
     private  ArrayList<String> alPost =  null;
     private  ArrayList<String> alName = null;
-    private  ArrayList<Bitmap> alBitmap = null;
+    private  ArrayList<String> alImageLink = null;
 
     LayoutInflater inflater = null;
 
-    public SimpleAdapterFeed(Context context, ArrayList<String> alPost, ArrayList<String> alName, ArrayList<Bitmap> alBitmap) {
+    public SimpleAdapterFeed(Context context, ArrayList<String> alPost, ArrayList<String> alName, ArrayList<String> alImageLink) {
         super(context, R.layout.list_row, alPost);
         this.context = context;
         this.alPost = alPost;
         this.alName = alName;
-        this.alBitmap = alBitmap;
+        this.alImageLink = alImageLink;
     }
 
     @Override
@@ -48,8 +48,10 @@ public class SimpleAdapterFeed extends ArrayAdapter<String> {
         ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.tvListRowTitle.setText(alName.get(position));
         holder.tvPost.setText(alPost.get(position));
-        if(alBitmap.get(position)!=null)
-            holder.ivListRow.setImageBitmap(alBitmap.get(position));
+
+        if(alImageLink.get(position)!=null)
+            new ImageLoader(holder.ivListRow,context).execute(new String[]{alImageLink.get(position)});
+
         return convertView;
     }
 

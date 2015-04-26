@@ -12,7 +12,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/ivListRow"
-            android:src="@drawable/ce"
+            android:src="@drawable/abc_switch_thumb_material"
             android:layout_margin="10dp"
             android:scaleType="fitXY"/>
 
